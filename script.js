@@ -1,7 +1,18 @@
 const API = "https://forum-backend-t92d.onrender.com";
 const socket = io(API);
 
-let user = localStorage.getItem("user") || "anon";
+let user = localStorage.getItem("user");
+
+if (!user) {
+  user = prompt("Enter a username:");
+
+  if (!user) {
+    user = "anon";
+  }
+
+  localStorage.setItem("user", user);
+}
+
 
 // ================= TIME =================
 function timeAgo(d) {
