@@ -1,5 +1,5 @@
 const API = "http://localhost:3000";
-const socket = io(API);
+const socket = io("https://forum-backend-t92d.onrender.com");
 
 function timeAgo(d) {
   const s = (Date.now() - new Date(d)) / 1000;
