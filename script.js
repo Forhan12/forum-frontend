@@ -1,7 +1,7 @@
 const API = "https://forum-backend-t92d.onrender.com";
-const socket = io("https://forum-backend-t92d.onrender.com");
+const socket = io(API);
 
-let currentUser = localStorage.getItem("user") || "anon";
+let user = localStorage.getItem("user") || "anon";
 
 // ================= TIME =================
 function timeAgo(d) {
@@ -12,28 +12,29 @@ function timeAgo(d) {
   return Math.floor(s/86400)+"d ago";
 }
 
-// ================= LOAD THREADS =================
+// ================= LOAD =================
 async function loadThreads() {
-  const res = await fetch(API + "/threads");
+  const res = await fetch(API+"/threads");
   const data = await res.json();
 
   const el = document.getElementById("threads");
   el.innerHTML = "";
 
   data.forEach(t => {
+    socket.emit("joinThread", t._id);
+
     const d = document.createElement("div");
-    d.className = "thread";
+    d.className = "thread-box";
 
     d.innerHTML = `
-      <div class="thread-box">
-        <b>${t.title}</b> 🔥 ${t.score}
-        <div>👍 ${t.upvotes} • ${timeAgo(t.createdAt)}</div>
-        <button onclick="upvote('${t._id}')">Upvote</button>
-        <div id="comments-${t._id}"></div>
+      <b>${t.title}</b> 🔥 ${t.score}
+      <div>👍 ${t.upvotes} • ${timeAgo(t.createdAt)}</div>
+      <button onclick="upvote('${t._id}')">Upvote</button>
 
-        <input placeholder="Write a comment..." id="comment-${t._id}" />
-        <button onclick="sendComment('${t._id}')">Comment</button>
-      </div>
+      <div id="comments-${t._id}"></div>
+
+      <input id="comment-${t._id}" placeholder="Write comment..." />
+      <button onclick="sendComment('${t._id}')">Comment</button>
     `;
 
     el.appendChild(d);
@@ -42,33 +43,32 @@ async function loadThreads() {
   });
 }
 
-// ================= RENDER COMMENTS (RECURSIVE) =================
-function renderComments(thread, comments, parentEl, depth = 0) {
+// ================= COMMENTS =================
+function renderComments(thread, comments, parent, depth = 0) {
   comments.forEach(c => {
     const div = document.createElement("div");
     div.style.marginLeft = depth * 15 + "px";
 
     div.innerHTML = `
       <p><b>${c.user}</b>: ${c.text}</p>
-      <small>${timeAgo(c.createdAt)} • 👍 ${c.upvotes}</small><br/>
+      <small>${timeAgo(c.createdAt)}</small><br/>
       <button onclick="showReplyBox('${thread._id}', '${c._id}', this)">Reply</button>
       <div id="replies-${c._id}"></div>
     `;
 
-    parentEl.appendChild(div);
+    parent.appendChild(div);
 
-    // Render nested replies
-    if (c.replies && c.replies.length > 0) {
+    if (c.replies) {
       renderComments(thread, c.replies, div.querySelector(`#replies-${c._id}`), depth + 1);
     }
   });
 }
 
-// ================= CREATE THREAD =================
+// ================= THREAD =================
 async function createThread() {
   const title = document.getElementById("threadInput").value;
 
-  await fetch(API + "/threads", {
+  await fetch(API+"/threads", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ title })
@@ -82,19 +82,18 @@ function upvote(id) {
   fetch(`${API}/threads/${id}/upvote`, {
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ username: currentUser })
+    body: JSON.stringify({ username: user })
   }).then(loadThreads);
 }
 
 // ================= COMMENT =================
 function sendComment(threadId) {
   const input = document.getElementById(`comment-${threadId}`);
-  const text = input.value;
 
   socket.emit("comment", {
     threadId,
-    user: currentUser,
-    text
+    user,
+    text: input.value
   });
 
   input.value = "";
@@ -105,7 +104,7 @@ function showReplyBox(threadId, commentId, btn) {
   const box = document.createElement("div");
 
   box.innerHTML = `
-    <input type="text" id="reply-${commentId}" placeholder="Reply..." />
+    <input id="reply-${commentId}" placeholder="Reply..." />
     <button onclick="submitReply('${threadId}', '${commentId}')">Send</button>
   `;
 
@@ -114,22 +113,20 @@ function showReplyBox(threadId, commentId, btn) {
 
 function submitReply(threadId, commentId) {
   const input = document.getElementById(`reply-${commentId}`);
-  const text = input.value;
 
   socket.emit("reply", {
     threadId,
     parentId: commentId,
-    user: currentUser,
-    text
+    user,
+    text: input.value
   });
 }
 
-// ================= SOCKET LISTENERS =================
+// ================= SOCKET =================
 socket.on("newComment", () => loadThreads());
 socket.on("newReply", () => loadThreads());
-socket.on("commentUpvoted", () => loadThreads());
 
-// ================= DARK MODE =================
+// ================= DARK =================
 function toggleDark() {
   document.body.classList.toggle("dark");
 }
