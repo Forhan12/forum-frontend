@@ -1,4 +1,4 @@
-const API = "http://localhost:3000";
+const API = "https://forum-backend-t92d.onrender.com";
 const socket = io("https://forum-backend-t92d.onrender.com");
 
 function timeAgo(d) {
