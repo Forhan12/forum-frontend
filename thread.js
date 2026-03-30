@@ -21,6 +21,22 @@ async function loadThread() {
   renderComments(t.comments || [], el);
 
   socket.emit("joinThread", threadId);
+
+  // ✅ CHECK IF USER ALREADY COMMENTED
+  const alreadyCommented = (t.comments || []).some(
+    c => c.user === user
+  );
+
+  const input = document.getElementById("commentInput");
+  const btn = document.querySelector("button[onclick='sendComment()']");
+
+  if (alreadyCommented) {
+    input.style.display = "none";
+    btn.style.display = "none";
+  } else {
+    input.style.display = "block";
+    btn.style.display = "block";
+  }
 }
 
 // ================= COMMENTS =================
