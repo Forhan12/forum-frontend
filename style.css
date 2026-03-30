@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: white;
+}
+
+.navbar {
+  border-bottom: 2px solid blue;
+  padding: 10px;
+}
+
+.thread {
+  border: 2px solid blue;
+  margin: 10px;
+  padding: 10px;
+}
+
+.comment {
+  border-left: 2px solid blue;
+  margin-left: 10px;
+  padding-left: 10px;
+}
+
+.replies {
+  margin-left: 15px;
+}
+
+body.dark {
+  background: #0f172a;
+  color: white;
+}
