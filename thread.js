@@ -5,6 +5,9 @@ const params = new URLSearchParams(window.location.search);
 const threadId = params.get("id");
 
 let user = localStorage.getItem("user");
+if (localStorage.getItem("darkMode") === "true") {
+  document.body.classList.add("dark");
+}
 
 // ================= LOAD THREAD =================
 async function loadThread() {
