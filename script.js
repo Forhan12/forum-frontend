@@ -61,3 +61,43 @@ loadThreads(commentDiv.innerHTML += `
     Reply
   </button>
 `;);
+
+function showReplyBox(threadId, commentId) {
+  const box = document.createElement("div");
+
+  box.innerHTML = `
+    <input type="text" placeholder="Write a reply..." id="reply-${commentId}" />
+    <button onclick="submitReply('${threadId}', '${commentId}')">Send</button>
+  `;
+
+  event.target.parentElement.appendChild(box);
+}
+function submitReply(threadId, commentId) {
+  const input = document.getElementById(`reply-${commentId}`);
+  const text = input.value;
+
+  fetch(`${API}/reply`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      threadId,
+      commentId,
+      text,
+      user: localStorage.getItem("user")
+    })
+  })
+  .then(res => res.json())
+  .then(() => loadThreads());
+}
+if (comment.replies && comment.replies.length > 0) {
+  comment.replies.forEach(reply => {
+    const replyDiv = document.createElement("div");
+    replyDiv.style.marginLeft = "20px";
+
+    replyDiv.innerHTML = `
+      <p><b>${reply.user}</b>: ${reply.text}</p>
+    `;
+
+    commentDiv.appendChild(replyDiv);
+  });
+}
