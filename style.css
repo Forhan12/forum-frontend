@@ -42,3 +42,34 @@ button:hover {
   background: blue;
   color: white;
 }
+body {
+  font-family: Arial;
+  background: white;
+  color: black;
+}
+
+.thread-box {
+  border: 2px solid blue;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+button {
+  border: 1px solid blue;
+  background: white;
+  color: blue;
+  padding: 4px 8px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: blue;
+  color: white;
+}
+
+.dark {
+  background: #111;
+  color: white;
+}
