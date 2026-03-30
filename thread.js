@@ -70,6 +70,10 @@ function sendComment() {
   });
 
   input.value = "";
+
+  // ✅ Hide immediately (no reload wait)
+  input.style.display = "none";
+  document.querySelector("button[onclick='sendComment()']").style.display = "none";
 }
 
 // ================= REPLY =================
