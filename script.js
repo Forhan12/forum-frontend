@@ -37,6 +37,16 @@ async function loadThreads() {
     const d = document.createElement("div");
     d.className = "thread-box";
 
+    function openThread(id) {
+  window.location.href = `thread.html?id=${id}`;
+}
+    d.innerHTML = `
+  <b onclick="openThread('${t._id}')" style="cursor:pointer">
+    ${t.title}
+  </b> 🔥 ${t.score}
+  <div>👍 ${t.upvotes} • ${timeAgo(t.createdAt)}</div>
+  <button onclick="upvote('${t._id}')">Upvote</button>
+`;
     d.innerHTML = `
       <b>${t.title}</b> 🔥 ${t.score}
       <div>👍 ${t.upvotes} • ${timeAgo(t.createdAt)}</div>
