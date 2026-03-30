@@ -37,7 +37,11 @@ async function createThread() {
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ title })
   });
-  loadThreads();
+  loadThreads(commentDiv.innerHTML += `
+  <button onclick="showReplyBox('${thread._id}', '${comment._id}')">
+    Reply
+  </button>
+`;);
 }
 
 function upvote(id) {
@@ -52,4 +56,8 @@ function toggleDark() {
   document.body.classList.toggle("dark");
 }
 
-loadThreads();
+loadThreads(commentDiv.innerHTML += `
+  <button onclick="showReplyBox('${thread._id}', '${comment._id}')">
+    Reply
+  </button>
+`;);
